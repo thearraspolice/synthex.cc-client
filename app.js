@@ -112,16 +112,14 @@ import * as socketStuff from "./lib/socketInit.js";
     navigator.userAgent
   );
   global.mobile && document.body.classList.add("mobile");
-  async function getMockups() {
-    global.mockupLoading = (async () => {
-        try {
-            const data = await util.pullJSON("mockups");
-            global.mockups = data;
-            console.log('Mockups loading complete.');
-        } catch (error) {
-            console.error('Error loading mockups:', error);
-        }
-    })();
+  function getMockups() {
+    global.mockupLoading = new Promise((Resolve) => {
+      util.pullJSON("mockups").then((data) => {
+        global.mockups = data;
+        console.log("Mockups loading complete.");
+        Resolve();
+      });
+    });
   }
   function getKeybinds() {
     let kb = localStorage.getItem("keybinds");
@@ -199,6 +197,7 @@ import * as socketStuff from "./lib/socketInit.js";
   window.onload = async () => {
     let serverlist = [
         "simple-arras-template-server.glitch.me",
+        /*"melted-sweltering-odometer.glitch.me"*/
       ],
       servers = [];
 
@@ -338,7 +337,6 @@ import * as socketStuff from "./lib/socketInit.js";
             .pullJSON("gamemodeData")
             .then((server) => {
               try {
-                getMockups();
                 const tdLocation = document.createElement("td");
                 const tdGameMode = document.createElement("td");
                 const tdPlayers = document.createElement("td");
@@ -354,7 +352,6 @@ import * as socketStuff from "./lib/socketInit.js";
                 tr.appendChild(tdPlayers);
 
                 tr.onclick = () => {
-                  getMockups();
                   if (myServer.classList.contains("selected")) {
                     myServer.classList.remove("selected");
                   }
@@ -362,12 +359,9 @@ import * as socketStuff from "./lib/socketInit.js";
                   myServer = tr;
                   window.serverAdd = ip;
                   window.serverAddProtocol = protocol;
-                  getMockups().then(() => {
-                    console.log("Mockups updated after row selection.");
-                  });
+                  getMockups();
                 };
 
-                getMockups();
                 myServer = tr;
                 resolve(true);
               } catch (e) {
@@ -1080,7 +1074,7 @@ import * as socketStuff from "./lib/socketInit.js";
             context.rotate(angle);
             context.imageSmoothingEnabled = imageInterpolation;
             context.drawImage(img, -radius, -radius, radius * 2, radius * 2);
-            context.imageSmoothingEnabled = true;
+            context.imageSmoothingEnabled = false;
             context.rotate(-angle);
             context.translate(-centerX, -centerY);
             return;
@@ -2343,10 +2337,10 @@ import * as socketStuff from "./lib/socketInit.js";
     );
     global.clickables.stat.hide();
     let vspacing = 4;
-    let height = 15;
+    let height = 12;
     let gap = 40;
     let len = alcoveSize; // * global.screenWidth; // The 30 is for the value modifiers
-    let save = len;
+    let save = len - 8;
     let x =
       spacing +
       (statMenu.get() - 1) *
@@ -2720,7 +2714,7 @@ import * as socketStuff from "./lib/socketInit.js";
     // Draw minimap and FPS monitors
     //minimap stuff starts here
     let orangeColor = false;
-    let len = alcoveSize; // * global.screenWidth;
+    let len = alcoveSize / 1.2; // * global.screenWidth;
     let height = (len / global.gameWidth) * global.gameHeight;
     if (
       global.gameHeight > global.gameWidth ||
@@ -2855,7 +2849,7 @@ import * as socketStuff from "./lib/socketInit.js";
     // Text
     if (global.showDebug) {
       drawText(
-        "Simple Arras Template",
+        "arras.io",
         x + len,
         y - 50 - 5 * 14 - 2,
         15,
@@ -2917,7 +2911,7 @@ import * as socketStuff from "./lib/socketInit.js";
       );
     } else if (!global.GUIStatus.minimapReducedInfo) {
       drawText(
-        "Simple Arras Template",
+        "arras.io",
         x + len,
         y - 50 - 2 * 14 - 2,
         15,
@@ -2925,8 +2919,8 @@ import * as socketStuff from "./lib/socketInit.js";
         "right"
       );
       drawText(
-        (100 * gui.fps).toFixed(2) +
-          "% : " +
+        global.mspt +
+          " mspt / " +
           global.metrics.rendertime +
           " FPS",
         x + len,
@@ -2945,7 +2939,7 @@ import * as socketStuff from "./lib/socketInit.js";
       );
     } else
       drawText(
-        "Simple Arras Template",
+        "arras.io",
         x + len,
         y - 22 - 2 * 14 - 2,
         15,
@@ -2959,7 +2953,7 @@ import * as socketStuff from "./lib/socketInit.js";
     let lb = leaderboard.get();
     let vspacing = 4;
     let len = alcoveSize; // * global.screenWidth;
-    let height = 14;
+    let height = 12;
     let x = global.screenWidth - len - spacing;
     let y = spacing + height + 7;
     if (!lb.data.length) return;
@@ -2980,7 +2974,7 @@ import * as socketStuff from "./lib/socketInit.js";
       "Leaderboard",
       Math.round(x + len / 2) + 0.5,
       Math.round(y - 6) + 0.5,
-      height + 3.5,
+      height + 4,
       color.guiwhite,
       "center"
     );
@@ -3000,7 +2994,7 @@ import * as socketStuff from "./lib/socketInit.js";
         x,
         x + len * shift,
         y + height / 2,
-        height - 3.5,
+        height - 2,
         gameDraw.modifyColor(entry.barColor)
       );
       // Leadboard name + score
@@ -3009,7 +3003,7 @@ import * as socketStuff from "./lib/socketInit.js";
         entry.label + (": " + util.handleLargeNumber(Math.round(entry.score))),
         x + len / 2,
         y + height / 2,
-        height - 5,
+        height - 3,
         nameColor == "#ffffff" ? color.guiwhite : nameColor,
         "center",
         true
@@ -3032,7 +3026,7 @@ import * as socketStuff from "./lib/socketInit.js";
         true
       );
       // Move down
-      y += vspacing + height;
+      y += vspacing + height / 2;
     }
   }
 
@@ -3040,7 +3034,7 @@ import * as socketStuff from "./lib/socketInit.js";
     // Draw upgrade menu
     if (gui.upgrades.length > 0) {
       let internalSpacing = 15;
-      let len = alcoveSize / 2;
+      let len = alcoveSize / 2.5;
       let height = len;
 
       // Animation processing
@@ -3123,7 +3117,7 @@ import * as socketStuff from "./lib/socketInit.js";
           y,
           len,
           height,
-          1,
+          0.8,
           upgradeSpin,
           0.6,
           colorIndex++,
