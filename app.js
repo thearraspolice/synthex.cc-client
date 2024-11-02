@@ -194,120 +194,37 @@ import * as socketStuff from "./lib/socketInit.js";
     }
   }
 
-  window.onload = async () => {
-    let serverlist = [
-        "simple-arras-template-server.glitch.me",
-        /*"melted-sweltering-odometer.glitch.me"*/
-      ],
-      servers = [];
+window.onload = async () => {
+  const serverList = [
+    "simple-arras-template-server.glitch.me",
+    /*"melted-sweltering-odometer.glitch.me"*/
+  ];
+  const servers = [];
 
-    serverlist.forEach((server) => {
-      let location;
-      if (server.endsWith(".glitch.me")) {
-        location = "GLITCH";
-      } else if (server.endsWith(".onrender.com")) {
-        location = "RENDER";
-      } else if (server.endsWith(".csb.app")) {
-        location = "CSB";
-      } else if (server.endsWith(".herokuapp.com")) {
-        location = "HEROKU";
-      } else if (server.endsWith(".github.io")) {
-        location = "GITHUB";
-      } else if (server.endsWith(".netlify.app")) {
-        location = "NETLIFY";
-      } else if (server.endsWith(".vercel.app")) {
-        location = "VERCEL";
-      } else if (server.endsWith(".digitaloceanspaces.com")) {
-        location = "DIGITALOCEAN";
-      } else if (server.endsWith(".awsapps.com")) {
-        location = "AWS";
-      } else if (server.endsWith(".azurewebsites.net")) {
-        location = "AZURE";
-      } else if (server.endsWith(".cloudapp.net")) {
-        location = "AZURE";
-      } else if (server.endsWith(".firebaseapp.com")) {
-        location = "FIREBASE";
-      } else if (server.endsWith(".hetzner.cloud")) {
-        location = "HETZNER";
-      } else if (server.endsWith(".googleusercontent.com")) {
-        location = "GOOGLE CLOUD";
-      } else if (server.endsWith(".dreamhost.com")) {
-        location = "DREAMHOST";
-      } else if (server.endsWith(".pantheonsite.io")) {
-        location = "PANTHEON";
-      } else if (server.endsWith(".cloudwaysapps.com")) {
-        location = "CLOUDWAYS";
-      } else if (server.endsWith(".scw.cloud")) {
-        location = "SCALWAY";
-      } else if (server.endsWith(".linode.com")) {
-        location = "LINODE";
-      } else if (server.endsWith(".ovh.net")) {
-        location = "OVH";
-      } else if (server.endsWith(".fastly.net")) {
-        location = "FASTLY";
-      } else if (server.endsWith("fly.dev")) {
-        location = "FLY.IO"
-      } else {
-        location = "UNKNOWN";
+  const getLocation = (server) => {
+    const endings = {
+      ".glitch.me": "GLITCH",
+      ".onrender.com": "RENDER",
+      ".csb.app": "CSB",
+    };
+    for (const ending in endings) {
+      if (server.endsWith(ending)) {
+        return endings[ending];
       }
-
-      servers.push([server,location,!0,0]);
-    });
-
-    const server = new URLSearchParams(window.location.search).get("s");
-
-    if (server) {
-      let location;
-      if (server.endsWith(".glitch.me")) {
-        location = "GLITCH";
-      } else if (server.endsWith(".onrender.com")) {
-        location = "RENDER";
-      } else if (server.endsWith(".csb.app")) {
-        location = "CSB";
-      } else if (server.endsWith(".herokuapp.com")) {
-        location = "HEROKU";
-      } else if (server.endsWith(".github.io")) {
-        location = "GITHUB";
-      } else if (server.endsWith(".netlify.app")) {
-        location = "NETLIFY";
-      } else if (server.endsWith(".vercel.app")) {
-        location = "VERCEL";
-      } else if (server.endsWith(".digitaloceanspaces.com")) {
-        location = "DIGITALOCEAN";
-      } else if (server.endsWith(".awsapps.com")) {
-        location = "AWS";
-      } else if (server.endsWith(".azurewebsites.net")) {
-        location = "AZURE";
-      } else if (server.endsWith(".cloudapp.net")) {
-        location = "AZURE";
-      } else if (server.endsWith(".firebaseapp.com")) {
-        location = "FIREBASE";
-      } else if (server.endsWith(".hetzner.cloud")) {
-        location = "HETZNER";
-      } else if (server.endsWith(".googleusercontent.com")) {
-        location = "GOOGLE CLOUD";
-      } else if (server.endsWith(".dreamhost.com")) {
-        location = "DREAMHOST";
-      } else if (server.endsWith(".pantheonsite.io")) {
-        location = "PANTHEON";
-      } else if (server.endsWith(".cloudwaysapps.com")) {
-        location = "CLOUDWAYS";
-      } else if (server.endsWith(".scw.cloud")) {
-        location = "SCALWAY";
-      } else if (server.endsWith(".linode.com")) {
-        location = "LINODE";
-      } else if (server.endsWith(".ovh.net")) {
-        location = "OVH";
-      } else if (server.endsWith(".fastly.net")) {
-        location = "FASTLY";
-      } else if (server.endsWith(".fly.dev")) {
-        location = "FLY.IO";
-      } else {
-        location = "UNKNOWN";
-      }
-
-      location&&servers.push([server,location,!0,0]);
     }
+    return "UNKNOWN";
+  };
+
+  serverList.forEach((server) => {
+    const location = getLocation(server);
+    servers.push([server, location, true, 0]);
+  });
+
+  const serverFromUrl = new URLSearchParams(window.location.search).get("s");
+  if (serverFromUrl) {
+    const location = getLocation(serverFromUrl);
+    servers.push([serverFromUrl, location, true, 0]);
+  }
     window.isMultiserver = true;
     let serverSelector = document.getElementById("serverSelector"),
       tbody = document.createElement("tbody");
@@ -3026,7 +2943,7 @@ import * as socketStuff from "./lib/socketInit.js";
         true
       );
       // Move down
-      y += vspacing + height / 2;
+      y += vspacing + height / 1.1;
     }
   }
 
